@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:hearai/home.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:speech_recognition/speech_recognition.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -37,7 +38,7 @@ class _SplashState extends State<Splash> {
     });
   }
 
-  initPlatformState() async {
+  void initPlatformState() async {
     String platformVersion;
 
     try {
@@ -71,24 +72,69 @@ class Setup extends StatefulWidget {
 class _SetupState extends State<Setup> {
   Permission permission = Permission.RecordAudio;
   var dialogNum = 0;
+  SpeechRecognition _speech = new SpeechRecognition();
+  bool _speechRecognitionAvailable;
+  String _currentLocale;
+  bool _isListening = false;
+  String _readSpeed = "normal";
 
   Future _speak() async {
     print("HERE IS THE VALUE OF IT: $dialogNum");
+
+    if (dialogNum == 3) {
+      await FlutterTts().speak(
+          "Speed set to $_readSpeed. Continue to home. You can come back, and change this at anytime");
+    }
+
+    if (dialogNum == 2) {
+      await speechRecognition();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      setState(() {
+        preferences.setString("readSpeed", _readSpeed);
+        print("Read speed set to $_readSpeed");
+      });
+    }
+
     var msg = [
-      "Hello an welcome to Hear AI. This is our one time setup Screen. I am your assistant. I am Here to guide you through! Lets get Started",
-      "What is your Name?",
-      "Select reading speed. Slow, Fast or Normal. This text is read at Normal speed."
+      "Hello and welcome to Hear AI. This is our one time setup Screen. I am your assistant. I am Here to guide you through! Lets get Started",
+      "Would you like a slow, fast, or, you will stick with normal reading speed.",
+      ""
     ];
     await FlutterTts().speak(msg[dialogNum]);
     await FlutterTts().setSpeechRate(1.0);
 
     setState(() {
+      if (dialogNum > 3) return;
       dialogNum++;
     });
+    _speech
+        .activate()
+        .then((res) => setState(() => _speechRecognitionAvailable = res));
+
+    _speech.setAvailabilityHandler(
+        (bool result) => setState(() => _speechRecognitionAvailable = result));
+
+    _speech.setCurrentLocaleHandler(
+        (String locale) => setState(() => _currentLocale = locale));
   }
 
-  Future _stop() async {
-    await FlutterTts().stop();
+  Future speechRecognition() async {
+    _speech
+        .listen(locale: _currentLocale)
+        .then((result) => print('result : $result'));
+
+    _speech.setRecognitionStartedHandler(
+        () => setState(() => _isListening = true));
+
+    _speech.setRecognitionResultHandler(
+        (String text) => setState(() => _readSpeed = text));
+
+    _speech.setRecognitionCompleteHandler(
+        () => setState(() => _isListening = false));
+
+    if (!mounted) {
+      _speech.stop();
+    }
   }
 
   @override
@@ -109,14 +155,16 @@ class _SetupState extends State<Setup> {
               ),
             ),
           ),
+          Text("Read Speed: $_readSpeed"),
           Padding(
             padding: const EdgeInsets.only(top: 200.0),
             child: Center(
-              child: RaisedButton(
-                child: Text("Home"),
-                onPressed: (){Navigator.pushReplacementNamed(context, "/home");},
-              )
-            ),
+                child: RaisedButton(
+              child: Text("Home"),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, "/home");
+              },
+            )),
           ),
         ],
       ),
@@ -124,6 +172,8 @@ class _SetupState extends State<Setup> {
         onPressed: () {
           requestPermission(permission);
           _speak();
+          //_speak();
+          //speechRecName();
         },
         child: Icon(Icons.mic),
         elevation: 6.0,
