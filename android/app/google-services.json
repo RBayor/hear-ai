@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "876535077335",
+    "firebase_url": "https://hear-ai.firebaseio.com",
+    "project_id": "hear-ai",
+    "storage_bucket": "hear-ai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876535077335:android:9bc7b9c69fd42aa1",
+        "android_client_info": {
+          "package_name": "com.example.hearai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "876535077335-a8ra3dptsmld5lvi43p3brq6bit7kt1i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv5Wawv7G9aTKCnaECGhZ72wAoZcZJAIg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
