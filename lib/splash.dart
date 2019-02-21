@@ -7,12 +7,15 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 
 class Splash extends StatefulWidget {
+  var cameras;
+  Splash(this.cameras);
   @override
   _SplashState createState() => _SplashState();
 }
 
 class _SplashState extends State<Splash> {
   String _platformVersion = 'Uknown';
+  var cameras;
 
   //Shared preferences screen
   Future checkSeen() async {
@@ -21,9 +24,9 @@ class _SplashState extends State<Splash> {
     print("seen within check func " + _seen.toString());
     if (_seen) {
       Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new Home()));
+          new MaterialPageRoute(builder: (context) => new Home(cameras)));
     } else {
-      preferences.setBool("seen", true);
+      preferences.setBool("seen", false);
       Navigator.of(context).pushReplacement(
           new MaterialPageRoute(builder: (context) => new Setup()));
     }
