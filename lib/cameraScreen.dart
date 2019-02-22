@@ -77,6 +77,8 @@ class _CameraScreenState extends State<CameraScreen> {
     const Text noResultsText = const Text("Nothing found");
     print("IN BuilD RESULT METHOD");
     print("Scan result is $_currentDetector");
+    print("Scan result is $_scanResults");
+    print("Scan result is $_cameraController.value.isInitialized");
     if (_scanResults == null ||
         _cameraController == null ||
         !_cameraController.value.isInitialized) {

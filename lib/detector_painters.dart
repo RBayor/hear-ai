@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 enum Detector { barcode, face, label, cloudLabel, text }
 
@@ -147,6 +148,7 @@ class TextDetectorPainter extends CustomPainter {
       paint.color = Colors.red;
       canvas.drawRect(_getRect(block), paint);
     }
+   
   }
 
   @override
