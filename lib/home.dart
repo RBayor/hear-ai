@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hearai/cameraScreen.dart';
-import 'package:camera/camera.dart';
 
 class Home extends StatefulWidget {
   var cameras;

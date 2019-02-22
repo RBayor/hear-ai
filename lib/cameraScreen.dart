@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-//import 'package:flutter/foundation.dart';
 import 'package:hearai/detector_painters.dart';
 import 'package:hearai/utils.dart';
+import 'dart:async';
 
 class CameraScreen extends StatefulWidget {
   List<CameraDescription> cameras;
@@ -18,16 +18,17 @@ class _CameraScreenState extends State<CameraScreen> {
   dynamic _scanResults;
   CameraController _cameraController;
 
-  Detector _currentDetector;
+  Detector _currentDetector = Detector.text;
   bool _isDetecting = false;
   CameraLensDirection _direction = CameraLensDirection.back;
 
   @override
   void initState() {
     super.initState();
-    _cameraController = new CameraController(widget.cameras[0], ResolutionPreset.medium);
-    _cameraController.initialize().then((_){
-      if(!mounted)return;
+    _cameraController =
+        new CameraController(widget.cameras[0], ResolutionPreset.medium);
+    _cameraController.initialize().then((_) {
+      if (!mounted) return;
       _initializeCamera();
       setState(() {});
     });
@@ -39,10 +40,10 @@ class _CameraScreenState extends State<CameraScreen> {
       if (_isDetecting) return;
       print("STARTING IMAGE STREAM");
       _isDetecting = true;
-
       detect(image, _getDetecttionMethod()).then((dynamic result) {
         setState(() {
           _scanResults = result;
+          print("this is the scan " + _scanResults.toString());
         });
         _isDetecting = false;
       }).catchError(
@@ -56,6 +57,9 @@ class _CameraScreenState extends State<CameraScreen> {
   HandleDetection _getDetecttionMethod() {
     final FirebaseVision mlVision = FirebaseVision.instance;
 
+    //_currentDetector =Detector.text;
+    print("You are detecting $_currentDetector");
+
     switch (_currentDetector) {
       case Detector.text:
         return mlVision.textRecognizer().processImage;
@@ -63,8 +67,6 @@ class _CameraScreenState extends State<CameraScreen> {
         return mlVision.barcodeDetector().detectInImage;
       case Detector.label:
         return mlVision.labelDetector().detectInImage;
-      case Detector.cloudLabel:
-        return mlVision.cloudLabelDetector().detectInImage;
       default:
         assert(_currentDetector == Detector.face);
         return mlVision.faceDetector().processImage;
@@ -73,10 +75,12 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget _buildResults() {
     const Text noResultsText = const Text("Nothing found");
-    print("IN BuilD rESULT METHOD");
+    print("IN BuilD RESULT METHOD");
+    print("Scan result is $_currentDetector");
     if (_scanResults == null ||
         _cameraController == null ||
         !_cameraController.value.isInitialized) {
+          print("We are getting null values in buid result");
       return noResultsText;
     }
     CustomPainter painter;
@@ -86,27 +90,37 @@ class _CameraScreenState extends State<CameraScreen> {
 
     switch (_currentDetector) {
       case Detector.barcode:
-        if (_scanResults is! List<Barcode>) return noResultsText;
+        if (_scanResults is! List<Barcode>) return Text("Scan not a barcode");
         painter = BarcodeDetectorPainter(imageSize, _scanResults);
+        print("Its a bar code");
         break;
-      case Detector.face:
-        if (_scanResults is! List<Face>) return noResultsText;
-        painter = FaceDetectorPainter(imageSize, _scanResults);
+      case Detector.text:
+        if (_scanResults is! VisionText) return Text("Scan is not vision Text");
+        painter = TextDetectorPainter(imageSize, _scanResults);
+        print("Its text!!!!");
         break;
       case Detector.label:
-        if (_scanResults is! List<Label>) return noResultsText;
+        if (_scanResults is! List<Label>) return Text("Scan label");
         painter = LabelDetectorPainter(imageSize, _scanResults);
+        print("Its an image");
         break;
       default:
-        assert(_currentDetector == Detector.text);
-        if (_scanResults is! VisionText) return noResultsText;
-        painter = TextDetectorPainter(imageSize, _scanResults);
+        assert(_currentDetector == Detector.face);
+        if (_scanResults is! VisionText) return Text("Scan not face");
+        painter = FaceDetectorPainter(imageSize, _scanResults);
+        print("Its a face");
     }
 
     return CustomPaint(
       painter: painter,
     );
   }
+
+  /*_lead() {
+    Timer(Duration(seconds: 5), () {
+      _buildResults();
+    });
+  }*/
 
   Widget _buildImage() {
     print("IN BuilD IMAGE METHOD");
@@ -172,7 +186,9 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       body: _buildImage(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _toggleCameraDirection,
+        onPressed: () {
+          _initializeCamera();
+        }, //_toggleCameraDirection,
         child: _direction == CameraLensDirection.back
             ? const Icon(Icons.camera_front)
             : const Icon(Icons.camera_rear),
