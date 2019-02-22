@@ -20,7 +20,7 @@ class _HearAIState extends State<HearAI> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Splash(cameras),
+      home: Splash(cameras),//cameras),
       routes: {
         '/home': (context) => Home(cameras),
         '/splash': (context) => Splash(cameras),

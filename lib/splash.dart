@@ -24,7 +24,7 @@ class _SplashState extends State<Splash> {
     print("seen within check func " + _seen.toString());
     if (_seen) {
       Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new Home(cameras)));
+          new MaterialPageRoute(builder: (context) => new Home(cameras)));//cameras)));
     } else {
       preferences.setBool("seen", false);
       Navigator.of(context).pushReplacement(
