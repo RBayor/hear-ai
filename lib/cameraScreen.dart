@@ -18,7 +18,7 @@ class _CameraScreenState extends State<CameraScreen> {
   dynamic _scanResults;
   CameraController _cameraController;
 
-  Detector _currentDetector;
+  Detector _currentDetector = Detector.text;
   bool _isDetecting = false;
   CameraLensDirection _direction = CameraLensDirection.back;
 
@@ -56,6 +56,8 @@ class _CameraScreenState extends State<CameraScreen> {
   HandleDetection _getDetecttionMethod() {
     final FirebaseVision mlVision = FirebaseVision.instance;
 
+    print("We are trying to detect $_currentDetector");
+
     switch (_currentDetector) {
       case Detector.text:
         return mlVision.textRecognizer().processImage;
@@ -86,11 +88,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
     switch (_currentDetector) {
       case Detector.barcode:
-        if (_scanResults is! List<Barcode>) return noResultsText;
+        if (_scanResults is! List<Barcode>) return Text("is not barcode");
         painter = BarcodeDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.face:
-        if (_scanResults is! List<Face>) return noResultsText;
+        if (_scanResults is! List<Face>) return Text("is not face");
         painter = FaceDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.label:
@@ -179,42 +181,4 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
     );
   }
-/**
- * Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          PopupMenuButton<Detector>(
-            onSelected: (Detector result) {
-              _currentDetector = result;
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
-                  const PopupMenuItem<Detector>(
-                    child: Text('Detect Barcode'),
-                    value: Detector.barcode,
-                  ),
-                  const PopupMenuItem<Detector>(
-                    child: Text('Detect Face'),
-                    value: Detector.face,
-                  ),
-                  const PopupMenuItem<Detector>(
-                    child: Text('Detect Label'),
-                    value: Detector.label,
-                  ),
-                  const PopupMenuItem<Detector>(
-                    child: Text('Detect Text'),
-                    value: Detector.text,
-                  ),
-                ],
-          ),
-        ],
-      ),
-      body: _buildImage(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleCameraDirection,
-        child: _direction == CameraLensDirection.back
-            ? const Icon(Icons.camera_front)
-            : const Icon(Icons.camera_rear),
-      ),
-    );
- */
 }
