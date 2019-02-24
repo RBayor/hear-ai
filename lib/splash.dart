@@ -191,7 +191,8 @@ Future requestPermission(Permission permission) async {
   final res = await SimplePermissions.requestPermission(permission);
   print("Permission is " + res.toString());
 }
-
+/*
 Future permissionStatus(Permission permission) async {
   final res = await SimplePermissions.getPermissionStatus(permission);
 }
+*/

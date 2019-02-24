@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
@@ -36,6 +38,83 @@ class _CameraScreenState extends State<CameraScreen> {
       _initializeCamera();
       setState(() {});
     });
+    _overlayButtons(context);
+  }
+
+  Future _overlayButtons(BuildContext context) async {
+    OverlayState overlayState = Overlay.of(context);
+    List<OverlayEntry> overlays = new List();
+
+    OverlayEntry overlayText = OverlayEntry(
+      builder: (context) => Positioned(
+            bottom: MediaQuery.of(context).size.height / 9,
+            left: MediaQuery.of(context).size.width / 20,
+            child: RaisedButton(
+              onPressed: () {
+                _currentDetector = Detector.text;
+              },
+              child: Text(
+                "Text",
+                style: TextStyle(color: Colors.white),
+              ),
+              color: Colors.blue,
+            ),
+          ),
+    );
+
+    OverlayEntry overlayLabel = OverlayEntry(
+      builder: (context) => Positioned(
+            bottom: MediaQuery.of(context).size.height / 9,
+            left: MediaQuery.of(context).size.width / 2.5,
+            child: RaisedButton(
+              onPressed: () {
+                _currentDetector = Detector.label;
+              },
+              child: Text(
+                "Area",
+                style: TextStyle(color: Colors.white),
+              ),
+              color: Colors.blue,
+            ),
+          ),
+    );
+    OverlayEntry overlayFaceWork = OverlayEntry(
+      builder: (context) => Positioned(
+          bottom: MediaQuery.of(context).size.height / 2.5,
+          right: MediaQuery.of(context).size.width / 2.5,
+          child: Text(
+            "Sorry Facial Recognition under construction!",
+            style: TextStyle(color: Colors.blue, fontSize: 20.0),
+          )),
+    );
+
+    OverlayEntry overlayFace = OverlayEntry(
+      builder: (context) => Positioned(
+            bottom: MediaQuery.of(context).size.height / 9,
+            right: MediaQuery.of(context).size.width / 20,
+            child: RaisedButton(
+              onPressed: () {
+                //_currentDetector =Detector.face;
+               /* setState(() {
+                  overlayState.insert(overlayFaceWork);
+                  await Future.delayed(Duration(seconds: 5));
+                  overlayFaceWork.remove();
+                });*/
+              },
+              child: Text(
+                "Face",
+                style: TextStyle(color: Colors.white),
+              ),
+              color: Colors.blue,
+            ),
+          ),
+    );
+
+    overlays.add(overlayText);
+    overlays.add(overlayLabel);
+    overlays.add(overlayFace);
+
+    overlayState.insertAll(overlays);
   }
 
   Future _initializeCamera() async {
@@ -155,7 +234,20 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      body: _buildImage(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _toggleCameraDirection,
+        child: _direction == 0
+            ? const Icon(Icons.camera_front)
+            : const Icon(Icons.camera_rear),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}
+
+/**
+ * appBar: AppBar(
         centerTitle: true,
         title: Text("Hear AI"),
         actions: <Widget>[
@@ -190,13 +282,4 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
         ],
       ),
-      body: _buildImage(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleCameraDirection,
-        child: _direction == 0
-            ? const Icon(Icons.camera_front)
-            : const Icon(Icons.camera_rear),
-      ),
-    );
-  }
-}
+ */

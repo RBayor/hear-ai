@@ -84,13 +84,13 @@ class LabelDetectorPainter extends CustomPainter {
     final ui.ParagraphBuilder builder = ui.ParagraphBuilder(
       ui.ParagraphStyle(
           textAlign: TextAlign.left,
-          fontSize: 23.0,
+          fontSize: 17.0,
           textDirection: TextDirection.ltr),
     );
 
     builder.pushStyle(ui.TextStyle(color: Colors.green));
     for (Label label in labels) {
-      builder.addText('Label: ${label.label}, '
+      builder.addText('guess: ${label.label}, '
           'Confidence: ${label.confidence.toStringAsFixed(2)}\n');
     }
     builder.pop();
@@ -136,7 +136,7 @@ class TextDetectorPainter extends CustomPainter {
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
-          paint.color = Colors.purple;
+          paint.color = Colors.white;
           canvas.drawRect(_getRect(element), paint);
         }
 
@@ -144,7 +144,7 @@ class TextDetectorPainter extends CustomPainter {
         canvas.drawRect(_getRect(line), paint);
       }
 
-      paint.color = Colors.white;
+      paint.color = Colors.blue;
       canvas.drawRect(_getRect(block), paint);
     }
   }
