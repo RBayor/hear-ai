@@ -20,18 +20,22 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Detector _currentDetector = Detector.text;
   bool _isDetecting = false;
-  CameraLensDirection _direction = CameraLensDirection.back;
+  int _direction = 0;
 
   @override
   void initState() {
     super.initState();
-    _cameraController = new CameraController(widget.cameras[0], ResolutionPreset.medium);
-    _cameraController.initialize().then((_){
-      if(!mounted)return;
+    preInitCam();
+  }
+
+  Future preInitCam() async {
+    _cameraController = new CameraController(
+        widget.cameras[_direction], ResolutionPreset.medium);
+    _cameraController.initialize().then((_) {
+      if (!mounted) return;
       _initializeCamera();
       setState(() {});
     });
-    //_initializeCamera();
   }
 
   Future _initializeCamera() async {
@@ -127,10 +131,10 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _toggleCameraDirection() async {
-    if (_direction == CameraLensDirection.back) {
-      _direction = CameraLensDirection.front;
+    if (_direction == 0) {
+      _direction = 1;
     } else {
-      _direction = CameraLensDirection.back;
+      _direction = 0;
     }
     await _cameraController.stopImageStream();
     await _cameraController.dispose();
@@ -139,14 +143,28 @@ class _CameraScreenState extends State<CameraScreen> {
       _cameraController = null;
     });
 
-    _initializeCamera();
+    preInitCam();
+  }
+
+  @override
+  void dispose() {
+    _cameraController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: Text("Hear AI"),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, "/setup");
+            },
+          ),
           PopupMenuButton<Detector>(
             onSelected: (Detector result) {
               _currentDetector = result;
@@ -175,7 +193,7 @@ class _CameraScreenState extends State<CameraScreen> {
       body: _buildImage(),
       floatingActionButton: FloatingActionButton(
         onPressed: _toggleCameraDirection,
-        child: _direction == CameraLensDirection.back
+        child: _direction == 0
             ? const Icon(Icons.camera_front)
             : const Icon(Icons.camera_rear),
       ),
