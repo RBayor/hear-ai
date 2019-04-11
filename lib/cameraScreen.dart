@@ -61,7 +61,7 @@ class _CameraScreenState extends State<CameraScreen> {
             ),
           ),
     );
-
+/*
     OverlayEntry overlayLabel = OverlayEntry(
       builder: (context) => Positioned(
             bottom: MediaQuery.of(context).size.height / 9,
@@ -108,11 +108,11 @@ class _CameraScreenState extends State<CameraScreen> {
               color: Colors.blue,
             ),
           ),
-    );
+    );*/
 
     overlays.add(overlayText);
-    overlays.add(overlayLabel);
-    overlays.add(overlayFace);
+    // overlays.add(overlayLabel);
+    // overlays.add(overlayFace);
 
     overlayState.insertAll(overlays);
   }
