@@ -138,14 +138,19 @@ class TextDetectorPainter extends CustomPainter {
         for (TextElement element in line.elements) {
           paint.color = Colors.white;
           canvas.drawRect(_getRect(element), paint);
+          String elementText = element.text;
+          print(elementText);
         }
 
         paint.color = Colors.green;
         canvas.drawRect(_getRect(line), paint);
+        String lineText = line.text;
+        print(lineText);
       }
-
       paint.color = Colors.blue;
       canvas.drawRect(_getRect(block), paint);
+      String blockText = block.text;
+      print(blockText);
     }
   }
 
